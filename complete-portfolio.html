@@ -1,0 +1,999 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hardik Raval | Data Analyst Portfolio</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.6.1/d3.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.1/chart.min.js"></script>
+    <style>
+        :root {
+            --primary-dark: #0f172a;
+            --secondary-dark: #1e293b;
+            --accent-color: #6366f1;
+            --text-primary: #f8fafc;
+            --text-secondary: #cbd5e1;
+        }
+        
+        body {
+            background-color: var(--primary-dark);
+            color: var(--text-primary);
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .nav-link {
+            position: relative;
+        }
+        
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background-color: var(--accent-color);
+            transition: width 0.3s ease;
+        }
+        
+        .nav-link:hover::after {
+            width: 100%;
+        }
+        
+        .card {
+            background-color: var(--secondary-dark);
+            border-radius: 8px;
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+        
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        .skill-bar {
+            height: 8px;
+            background-color: #334155;
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .skill-progress {
+            height: 100%;
+            background-color: var(--accent-color);
+            border-radius: 4px;
+        }
+
+        .blog-card {
+            cursor: pointer;
+        }
+
+        #hero-particles {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+        }
+
+        .section-heading {
+            position: relative;
+            display: inline-block;
+        }
+
+        .section-heading::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 0;
+            width: 60px;
+            height: 3px;
+            background-color: var(--accent-color);
+        }
+
+        .tooltip {
+            position: absolute;
+            padding: 8px 12px;
+            background: #475569;
+            color: white;
+            border-radius: 4px;
+            pointer-events: none;
+            font-size: 14px;
+            z-index: 10;
+        }
+
+        /* Animation for stats */
+        @keyframes countUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .stat-item {
+            animation: countUp 0.8s ease forwards;
+        }
+
+        .stat-item:nth-child(1) { animation-delay: 0.2s; }
+        .stat-item:nth-child(2) { animation-delay: 0.4s; }
+        .stat-item:nth-child(3) { animation-delay: 0.6s; }
+        .stat-item:nth-child(4) { animation-delay: 0.8s; }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="fixed w-full bg-gray-900 bg-opacity-95 z-50 shadow-lg">
+        <div class="container mx-auto px-6 py-3 flex items-center justify-between">
+            <div class="flex items-center">
+                <span class="text-2xl font-bold text-indigo-500">HR</span>
+                <span class="ml-2 text-xl font-semibold">Hardik Raval</span>
+            </div>
+            <div class="hidden md:flex space-x-10">
+                <a href="#about" class="nav-link text-gray-300 hover:text-white transition">About</a>
+                <a href="#projects" class="nav-link text-gray-300 hover:text-white transition">Projects</a>
+                <a href="#skills" class="nav-link text-gray-300 hover:text-white transition">Skills</a>
+                <a href="#resume" class="nav-link text-gray-300 hover:text-white transition">Resume</a>
+                <a href="#blog" class="nav-link text-gray-300 hover:text-white transition">Blog</a>
+                <a href="#contact" class="nav-link text-gray-300 hover:text-white transition">Contact</a>
+            </div>
+            <div class="md:hidden">
+                <button class="text-white focus:outline-none">
+                    <i class="fas fa-bars text-2xl"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="relative min-h-screen flex items-center justify-center pt-16" id="about">
+        <canvas id="hero-particles"></canvas>
+        <div class="container mx-auto px-6 z-10">
+            <div class="flex flex-col md:flex-row items-center">
+                <div class="md:w-1/2 mb-10 md:mb-0">
+                    <h1 class="text-4xl md:text-6xl font-bold mb-4">
+                        <span class="text-white">Turning Complex </span>
+                        <span class="text-indigo-500">Data</span>
+                        <span class="text-white"> into </span>
+                        <span class="text-indigo-500">Actionable Insights</span>
+                    </h1>
+                    <p class="text-xl text-gray-300 mb-8">Data analyst specializing in operational monitoring, system performance analytics, and pattern recognition with a focus on improving reliability and decision-making.</p>
+                    <div class="flex space-x-4">
+                        <a href="#projects" class="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-lg transition duration-300 transform hover:scale-105">
+                            View My Work
+                        </a>
+                        <a href="#contact" class="px-6 py-3 border border-indigo-500 text-indigo-500 hover:bg-indigo-500 hover:text-white font-medium rounded-lg transition duration-300 transform hover:scale-105">
+                            Contact Me
+                        </a>
+                    </div>
+                </div>
+                <div class="md:w-1/2 flex justify-center">
+                    <div id="skills-radar-chart" class="w-full max-w-md h-80"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="bg-gray-900 py-16">
+        <div class="container mx-auto px-6">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                <div class="stat-item bg-gray-800 p-6 rounded-lg text-center">
+                    <div class="text-indigo-500 text-4xl font-bold mb-2" id="stat-1">0</div>
+                    <div class="text-gray-300">Years Experience</div>
+                </div>
+                <div class="stat-item bg-gray-800 p-6 rounded-lg text-center">
+                    <div class="text-indigo-500 text-4xl font-bold mb-2" id="stat-2">0</div>
+                    <div class="text-gray-300">Projects Completed</div>
+                </div>
+                <div class="stat-item bg-gray-800 p-6 rounded-lg text-center">
+                    <div class="text-indigo-500 text-4xl font-bold mb-2" id="stat-3">0</div>
+                    <div class="text-gray-300">Failure Reduction</div>
+                </div>
+                <div class="stat-item bg-gray-800 p-6 rounded-lg text-center">
+                    <div class="text-indigo-500 text-4xl font-bold mb-2" id="stat-4">0</div>
+                    <div class="text-gray-300">Research Publications</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Projects Section -->
+    <section class="py-20" id="projects">
+        <div class="container mx-auto px-6">
+            <h2 class="section-heading text-3xl font-bold mb-12">Featured Projects</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Project 1 -->
+                <div class="card">
+                    <div class="relative overflow-hidden">
+                        <div class="h-48 bg-indigo-900 flex items-center justify-center">
+                            <i class="fas fa-chart-line text-6xl text-indigo-400"></i>
+                        </div>
+                        <div class="absolute inset-0 bg-black bg-opacity-50 opacity-0 hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                            <a href="#" class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition">View Project</a>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold mb-2">Real-time Anomaly Detection System</h3>
+                        <p class="text-gray-300 mb-4">Developed a system using Power BI and SQL to track performance metrics, enabling real-time detection of anomalies.</p>
+                        <div class="flex flex-wrap gap-2">
+                            <span class="px-3 py-1 bg-gray-700 text-xs rounded-full">Power BI</span>
+                            <span class="px-3 py-1 bg-gray-700 text-xs rounded-full">SQL</span>
+                            <span class="px-3 py-1 bg-gray-700 text-xs rounded-full">Statistical Analysis</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Project 2 -->
+                <div class="card">
+                    <div class="relative overflow-hidden">
+                        <div class="h-48 bg-blue-900 flex items-center justify-center">
+                            <i class="fas fa-code-branch text-6xl text-blue-400"></i>
+                        </div>
+                        <div class="absolute inset-0 bg-black bg-opacity-50 opacity-0 hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                            <a href="#" class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition">View Project</a>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold mb-2">Predictive Maintenance Model</h3>
+                        <p class="text-gray-300 mb-4">Developed a machine learning model to predict system failures and reduce downtime by 25% through preventative maintenance.</p>
+                        <div class="flex flex-wrap gap-2">
+                            <span class="px-3 py-1 bg-gray-700 text-xs rounded-full">Python</span>
+                            <span class="px-3 py-1 bg-gray-700 text-xs rounded-full">Machine Learning</span>
+                            <span class="px-3 py-1 bg-gray-700 text-xs rounded-full">Time Series</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Project 3 -->
+                <div class="card">
+                    <div class="relative overflow-hidden">
+                        <div class="h-48 bg-purple-900 flex items-center justify-center">
+                            <i class="fas fa-database text-6xl text-purple-400"></i>
+                        </div>
+                        <div class="absolute inset-0 bg-black bg-opacity-50 opacity-0 hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                            <a href="#" class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition">View Project</a>
+                        </div>
+                    </div>
+                    <div class="p-6">
+                        <h3 class="text-xl font-bold mb-2">Automated Alert System</h3>
+                        <p class="text-gray-300 mb-4">Implemented automated alert mechanisms to identify critical system deviations, resulting in 30% faster incident resolution.</p>
+                        <div class="flex flex-wrap gap-2">
+                            <span class="px-3 py-1 bg-gray-700 text-xs rounded-full">Azure</span>
+                            <span class="px-3 py-1 bg-gray-700 text-xs rounded-full">ETL Pipelines</span>
+                            <span class="px-3 py-1 bg-gray-700 text-xs rounded-full">Data Warehousing</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="mt-12 text-center">
+                <a href="#" class="px-6 py-3 border border-indigo-500 text-indigo-500 hover:bg-indigo-500 hover:text-white font-medium rounded-lg transition duration-300">
+                    View All Projects
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Skills Section -->
+    <section class="py-20 bg-gray-900" id="skills">
+        <div class="container mx-auto px-6">
+            <h2 class="section-heading text-3xl font-bold mb-12">Skills & Expertise</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-12">
+                <div>
+                    <h3 class="text-xl font-bold mb-6 text-indigo-400">Technical Skills</h3>
+                    
+                    <!-- Skill 1 -->
+                    <div class="mb-6">
+                        <div class="flex justify-between mb-2">
+                            <span class="text-gray-300">Data Analysis (SQL, Python, Excel)</span>
+                            <span class="text-indigo-400">90%</span>
+                        </div>
+                        <div class="skill-bar">
+                            <div class="skill-progress" style="width: 90%"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- Skill 2 -->
+                    <div class="mb-6">
+                        <div class="flex justify-between mb-2">
+                            <span class="text-gray-300">Data Visualization (Power BI, Tableau)</span>
+                            <span class="text-indigo-400">85%</span>
+                        </div>
+                        <div class="skill-bar">
+                            <div class="skill-progress" style="width: 85%"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- Skill 3 -->
+                    <div class="mb-6">
+                        <div class="flex justify-between mb-2">
+                            <span class="text-gray-300">Statistical Methods & Predictive Modeling</span>
+                            <span class="text-indigo-400">80%</span>
+                        </div>
+                        <div class="skill-bar">
+                            <div class="skill-progress" style="width: 80%"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- Skill 4 -->
+                    <div>
+                        <div class="flex justify-between mb-2">
+                            <span class="text-gray-300">Cloud & Databases (Azure, ETL)</span>
+                            <span class="text-indigo-400">75%</span>
+                        </div>
+                        <div class="skill-bar">
+                            <div class="skill-progress" style="width: 75%"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div>
+                    <h3 class="text-xl font-bold mb-6 text-indigo-400">Specialized Skills</h3>
+                    
+                    <!-- Specialized Skill 1 -->
+                    <div class="mb-6">
+                        <div class="flex justify-between mb-2">
+                            <span class="text-gray-300">System Monitoring & Performance Analytics</span>
+                            <span class="text-indigo-400">95%</span>
+                        </div>
+                        <div class="skill-bar">
+                            <div class="skill-progress" style="width: 95%"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- Specialized Skill 2 -->
+                    <div class="mb-6">
+                        <div class="flex justify-between mb-2">
+                            <span class="text-gray-300">Pattern Recognition & Time Series Analysis</span>
+                            <span class="text-indigo-400">88%</span>
+                        </div>
+                        <div class="skill-bar">
+                            <div class="skill-progress" style="width: 88%"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- Specialized Skill 3 -->
+                    <div class="mb-6">
+                        <div class="flex justify-between mb-2">
+                            <span class="text-gray-300">Failure Analysis & Interruption Tracking</span>
+                            <span class="text-indigo-400">92%</span>
+                        </div>
+                        <div class="skill-bar">
+                            <div class="skill-progress" style="width: 92%"></div>
+                        </div>
+                    </div>
+                    
+                    <!-- Specialized Skill 4 -->
+                    <div>
+                        <div class="flex justify-between mb-2">
+                            <span class="text-gray-300">Data Storytelling & Technical Reporting</span>
+                            <span class="text-indigo-400">82%</span>
+                        </div>
+                        <div class="skill-bar">
+                            <div class="skill-progress" style="width: 82%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-16">
+                <h3 class="text-xl font-bold mb-6 text-indigo-400">Certifications</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    <div class="bg-gray-800 p-4 rounded-lg flex items-center">
+                        <div class="w-12 h-12 bg-indigo-800 rounded-full flex items-center justify-center mr-4">
+                            <i class="fas fa-certificate text-indigo-300"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-medium">Power BI Data Analyst Associate</h4>
+                            <p class="text-sm text-gray-400">Microsoft (PL-300)</p>
+                        </div>
+                    </div>
+                    <div class="bg-gray-800 p-4 rounded-lg flex items-center">
+                        <div class="w-12 h-12 bg-indigo-800 rounded-full flex items-center justify-center mr-4">
+                            <i class="fas fa-chart-bar text-indigo-300"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-medium">Tableau Desktop Specialist</h4>
+                            <p class="text-sm text-gray-400">Tableau</p>
+                        </div>
+                    </div>
+                    <div class="bg-gray-800 p-4 rounded-lg flex items-center">
+                        <div class="w-12 h-12 bg-indigo-800 rounded-full flex items-center justify-center mr-4">
+                            <i class="fas fa-cloud text-indigo-300"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-medium">Azure Data Fundamentals</h4>
+                            <p class="text-sm text-gray-400">Microsoft (DP-900)</p>
+                        </div>
+                    </div>
+                    <div class="bg-gray-800 p-4 rounded-lg flex items-center">
+                        <div class="w-12 h-12 bg-indigo-800 rounded-full flex items-center justify-center mr-4">
+                            <i class="fas fa-graduation-cap text-indigo-300"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-medium">Data Analytics Professional</h4>
+                            <p class="text-sm text-gray-400">Google</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Resume Section -->
+    <section class="py-20" id="resume">
+        <div class="container mx-auto px-6">
+            <h2 class="section-heading text-3xl font-bold mb-12">My Resume</h2>
+            
+            <!-- Timeline -->
+            <div class="relative">
+                <!-- Timeline line -->
+                <div class="absolute left-4 md:left-1/2 h-full w-1 bg-indigo-500 transform -translate-x-1/2"></div>
+                
+                <!-- Experience Items -->
+                <div class="mb-16">
+                    <h3 class="text-2xl font-bold mb-6 text-indigo-400">Work Experience</h3>
+                    
+                    <!-- Item 1 -->
+                    <div class="relative flex flex-col md:flex-row items-center mb-12">
+                        <div class="flex-1 md:text-right md:pr-10 mb-4 md:mb-0">
+                            <div class="bg-gray-800 p-6 rounded-lg inline-block">
+                                <h4 class="text-xl font-semibold mb-2">Analyst</h4>
+                                <p class="text-indigo-400 mb-2">Sportradar, Mustame</p>
+                                <p class="text-gray-400">Feb 2024 - Present</p>
+                                <ul class="mt-4 text-gray-300 list-disc list-inside">
+                                    <li>Developed data monitoring systems using Power BI and SQL</li>
+                                    <li>Implemented automated alert mechanisms</li>
+                                    <li>Created comprehensive analytical dashboards</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="z-10 w-10 h-10 bg-indigo-600 rounded-full flex items-center justify-center">
+                            <i class="fas fa-briefcase text-white"></i>
+                        </div>
+                        <div class="flex-1 md:pl-10 invisible md:visible"></div>
+                    </div>
+                    
+                    <!-- Item 2 -->
+                    <div class="relative flex flex-col md:flex-row items-center mb-12">
+                        <div class="flex-1 md:text-right md:pr-10 invisible md:visible"></div>
+                        <div class="z-10 w-10 h-10 bg-indigo-600 rounded-full flex items-center justify-center">
+                            <i class="fas fa-briefcase text-white"></i>
+                        </div>
+                        <div class="flex-1 md:pl-10 mb-4 md:mb-0">
+                            <div class="bg-gray-800 p-6 rounded-lg inline-block">
+                                <h4 class="text-xl font-semibold mb-2">Quality Engineer</h4>
+                                <p class="text-indigo-400 mb-2">ABB, Juri</p>
+                                <p class="text-gray-400">Oct 2022 - Mar 2023</p>
+                                <ul class="mt-4 text-gray-300 list-disc list-inside">
+                                    <li>Analyzed system interruptions and failures</li>
+                                    <li>Designed failure prediction models</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Item 3 -->
+                    <div class="relative flex flex-col md:flex-row items-center">
+                        <div class="flex-1 md:text-right md:pr-10 mb-4 md:mb-0">
+                            <div class="bg-gray-800 p-6 rounded-lg inline-block">
+                                <h4 class="text-xl font-semibold mb-2">Quality & Assembly THW</h4>
+                                <p class="text-indigo-400 mb-2">Ericsson, Tallinn</p>
+                                <p class="text-gray-400">Mar 2021 - Oct 2022</p>
+                                <ul class="mt-4 text-gray-300 list-disc list-inside">
+                                    <li>Monitored system performance metrics</li>
+                                    <li>Reduced system reporting delays by 57%</li>
+                                    <li>Collaborated with engineering teams</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="z-10 w-10 h-10 bg-indigo-600 rounded-full flex items-center justify-center">
+                            <i class="fas fa-briefcase text-white"></i>
+                        </div>
+                        <div class="flex-1 md:pl-10 invisible md:visible"></div>
+                    </div>
+                </div>
+                
+                <!-- Education Items -->
+                <div>
+                    <h3 class="text-2xl font-bold mb-6 text-indigo-400">Education</h3>
+                    
+                    <!-- Item 1 -->
+                    <div class="relative flex flex-col md:flex-row items-center mb-12">
+                        <div class="flex-1 md:text-right md:pr-10 invisible md:visible"></div>
+                        <div class="z-10 w-10 h-10 bg-indigo-600 rounded-full flex items-center justify-center">
+                            <i class="fas fa-graduation-cap text-white"></i>
+                        </div>
+                        <div class="flex-1 md:pl-10 mb-4 md:mb-0">
+                            <div class="bg-gray-800 p-6 rounded-lg inline-block">
+                                <h4 class="text-xl font-semibold mb-2">MSc. Mechatronics</h4>
+                                <p class="text-indigo-400 mb-2">Taltech University</p>
+                                <p class="text-gray-400">June 2022</p>
+                                <div class="mt-2 text-gray-300">
+                                    <p>Thesis: Application of Machine Learning for System Reliability Analysis</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Item 2 -->
+                    <div class="relative flex flex-col md:flex-row items-center">
+                        <div class="flex-1 md:text-right md:pr-10 mb-4 md:mb-0">
+                            <div class="bg-gray-800 p-6 rounded-lg inline-block">
+                                <h4 class="text-xl font-semibold mb-2">B.E. Electrical Engineering</h4>
+                                <p class="text-indigo-400 mb-2">Gujarat Technological University</p>
+                                <p class="text-gray-400">August 2017</p>
+                                <div class="mt-2 text-gray-300">
+                                    <p>Focus: Power Systems, Control Engineering, Data Analysis</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="z-10 w-10 h-10 bg-indigo-600 rounded-full flex items-center justify-center">
+                            <i class="fas fa-graduation-cap text-white"></i>
+                        </div>
+                        <div class="flex-1 md:pl-10 invisible md:visible"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-12 text-center">
+                <a href="#" class="px-6 py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-lg transition duration-300 inline-flex items-center">
+                    <i class="fas fa-download mr-2"></i> Download Full Resume
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Blog Section -->
+    <section class="py-20 bg-gray-900" id="blog">
+        <div class="container mx-auto px-6">
+            <h2 class="section-heading text-3xl font-bold mb-12">Latest Blog Posts</h2>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <!-- Blog Post 1 -->
+                <div class="blog-card card">
+                    <img src="https://via.placeholder.com/800x400" alt="blog post" class="w-full h-48 object-cover">
+                    <div class="p-6">
+                        <div class="flex items-center mb-4">
+                            <span class="text-xs text-gray-400">April 1, 2025</span>
+                            <span class="mx-2 text-gray-600">|</span>
+                            <span class="text-xs bg-indigo-900 text-indigo-300 px-2 py-1 rounded">Data Visualization</span>
+                        </div>
+                        <h3 class="text-xl font-bold mb-3 hover:text-indigo-400 transition">The Future of Real-time Anomaly Detection in System Monitoring</h3>
+                        <p class="text-gray-300 mb-4">Exploring how AI and machine learning are revolutionizing the way we detect and respond to system anomalies...</p>
+                        <a href="#" class="text-indigo-400 hover:text-indigo-300 inline-flex items-center transition">
+                            Read More
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Blog Post 2 -->
+                <div class="blog-card card">
+                    <img src="https://via.placeholder.com/800x400" alt="blog post" class="w-full h-48 object-cover">
+                    <div class="p-6">
+                        <div class="flex items-center mb-4">
+                            <span class="text-xs text-gray-400">March 15, 2025</span>
+                            <span class="mx-2 text-gray-600">|</span>
+                            <span class="text-xs bg-indigo-900 text-indigo-300 px-2 py-1 rounded">Data Analysis</span>
+                        </div>
+                        <h3 class="text-xl font-bold mb-3 hover:text-indigo-400 transition">Optimizing System Performance Through Advanced Statistical Methods</h3>
+                        <p class="text-gray-300 mb-4">A deep dive into how modern statistical approaches can identify hidden patterns in system performance data...</p>
+                        <a href="#" class="text-indigo-400 hover:text-indigo-300 inline-flex items-center transition">
+                            Read More
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Blog Post 3 -->
+                <div class="blog-card card">
+                    <img src="https://via.placeholder.com/800x400" alt="blog post" class="w-full h-48 object-cover">
+                    <div class="p-6">
+                        <div class="flex items-center mb-4">
+                            <span class="text-xs text-gray-400">February 28, 2025</span>
+                            <span class="mx-2 text-gray-600">|</span>
+                            <span class="text-xs bg-indigo-900 text-indigo-300 px-2 py-1 rounded">Machine Learning</span>
+                        </div>
+                        <h3 class="text-xl font-bold mb-3 hover:text-indigo-400 transition">Predictive Maintenance: Preventing System Failures Before They Happen</h3>
+                        <p class="text-gray-300 mb-4">How predictive maintenance models are transforming system reliability and reducing operational costs...</p>
+                        <a href="#" class="text-indigo-400 hover:text-indigo-300 inline-flex items-center transition">
+                            Read More
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="mt-12 text-center">
+                <a href="#" class="px-6 py-3 border border-indigo-500 text-indigo-500 hover:bg-indigo-500 hover:text-white font-medium rounded-lg transition duration-300">
+                    View All Posts
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Contact Section -->
+    <section class="py-20" id="contact">
+        <div class="container mx-auto px-6">
+            <h2 class="section-heading text-3xl font-bold mb-12">Get In Touch</h2>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                <div>
+                    <p class="text-gray-300 mb-8">Have a project in mind or interested in working together? I'd love to hear from you. Fill out the form, and I'll get back to you as soon as possible.</p>
+                    
+                    <div class="flex items-center mb-6">
+                        <div class="w-12 h-12 bg-indigo-800 rounded-full flex items-center justify-center mr-4">
+                            <i class="fas fa-envelope text-indigo-300"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-medium text-gray-300 mb-1">Email</h4>
+                            <p class="text-indigo-400">Raval.hardik@hotmail.com</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-center mb-6">
+                        <div class="w-12 h-12 bg-indigo-800 rounded-full flex items-center justify-center mr-4">
+                            <i class="fas fa-phone text-indigo-300"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-medium text-gray-300 mb-1">Phone</h4>
+                            <p class="text-indigo-400">(372) 55677878</p>
+                        </div>
+                    </div>
+                    
+                    <div class="flex items-center">
+                        <div class="w-12 h-12 bg-indigo-800 rounded-full flex items-center justify-center mr-4">
+                            <i class="fas fa-map-marker-alt text-indigo-300"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-medium text-gray-300 mb-1">Location</h4>
+                            <p class="text-indigo-400">Mustame, Estonia</p>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-10">
+                        <h4 class="font-medium text-gray-300 mb-4">Connect with me</h4>
+                        <div class="flex space-x-4">
+                            <a href="#" class="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center text-indigo-400 hover:bg-indigo-600 hover:text-white transition">
+                                <i class="fab fa-linkedin-in"></i>
+                            </a>
+                            <a href="#" class="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center text-indigo-400 hover:bg-indigo-600 hover:text-white transition">
+                                <i class="fab fa-github"></i>
+                            </a>
+                            <a href="#" class="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center text-indigo-400 hover:bg-indigo-600 hover:text-white transition">
+                                <i class="fab fa-twitter"></i>
+                            </a>
+                            <a href="#" class="w-10 h-10 bg-gray-800 rounded-full flex items-center justify-center text-indigo-400 hover:bg-indigo-600 hover:text-white transition">
+                                <i class="fab fa-medium"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div>
+                    <form class="bg-gray-800 p-8 rounded-lg">
+                        <div class="mb-6">
+                            <label for="name" class="block text-gray-300 mb-2">Name</label>
+                            <input type="text" id="name" class="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-indigo-500">
+                        </div>
+                        
+                        <div class="mb-6">
+                            <label for="email" class="block text-gray-300 mb-2">Email</label>
+                            <input type="email" id="email" class="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-indigo-500">
+                        </div>
+                        
+                        <div class="mb-6">
+                            <label for="subject" class="block text-gray-300 mb-2">Subject</label>
+                            <input type="text" id="subject" class="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-indigo-500">
+                        </div>
+                        
+                        <div class="mb-6">
+                            <label for="message" class="block text-gray-300 mb-2">Message</label>
+                            <textarea id="message" rows="5" class="w-full bg-gray-700 border border-gray-600 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-indigo-500"></textarea>
+                        </div>
+                        
+                        <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-medium py-3 rounded-lg transition duration-300">
+                            Send Message
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 py-10">
+        <div class="container mx-auto px-6">
+            <div class="flex flex-col md:flex-row justify-between items-center">
+                <div class="mb-6 md:mb-0">
+                    <div class="flex items-center">
+                        <span class="text-2xl font-bold text-indigo-500">HR</span>
+                        <span class="ml-2 text-xl font-semibold text-white">Hardik Raval</span>
+                    </div>
+                    <p class="text-gray-400 mt-2">Data Analyst & System Performance Specialist</p>
+                </div>
+                
+                <div class="flex flex-wrap justify-center space-x-6">
+                    <a href="#about" class="text-gray-400 hover:text-white transition">About</a>
+                    <a href="#projects" class="text-gray-400 hover:text-white transition">Projects</a>
+                    <a href="#skills" class="text-gray-400 hover:text-white transition">Skills</a>
+                    <a href="#resume" class="text-gray-400 hover:text-white transition">Resume</a>
+                    <a href="#blog" class="text-gray-400 hover:text-white transition">Blog</a>
+                    <a href="#contact" class="text-gray-400 hover:text-white transition">Contact</a>
+                </div>
+            </div>
+            
+            <div class="border-t border-gray-800 mt-8 pt-8 flex flex-col md:flex-row justify-between items-center">
+                <p class="text-gray-400">&copy; 2025 Hardik Raval. All rights reserved.</p>
+                <div class="mt-4 md:mt-0">
+                    <a href="#" class="text-gray-400 hover:text-white transition mx-2">Privacy Policy</a>
+                    <a href="#" class="text-gray-400 hover:text-white transition mx-2">Terms of Service</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script>
+        // Animate stats count
+        function animateValue(id, start, end, duration) {
+            const obj = document.getElementById(id);
+            let startTimestamp = null;
+            const step = (timestamp) => {
+                if (!startTimestamp) startTimestamp = timestamp;
+                const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+                obj.innerHTML = Math.floor(progress * (end - start) + start);
+                if (progress < 1) {
+                    window.requestAnimationFrame(step);
+                }
+            };
+            window.requestAnimationFrame(step);
+        }
+        
+        // Smooth scrolling for navigation
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                document.querySelector(this.getAttribute('href')).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+        
+        // Intersection Observer for animations
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    if (entry.target.id === 'stat-1') {
+                        animateValue('stat-1', 0, 3, 2000); // Years Experience
+                        animateValue('stat-2', 0, 15, 2000); // Projects Completed
+                        animateValue('stat-3', 0, 25, 2000); // Failure Reduction %
+                        animateValue('stat-4', 0, 1, 2000);  // Research Publications
+                    }
+                }
+            });
+        }, { threshold: 0.5 });
+        
+        document.getElementById('stat-1') && observer.observe(document.getElementById('stat-1'));
+        
+        // Hero section particles
+        function createParticles() {
+            const canvas = document.getElementById('hero-particles');
+            if (!canvas) return;
+            
+            const ctx = canvas.getContext('2d');
+            canvas.width = canvas.offsetWidth;
+            canvas.height = canvas.offsetHeight;
+            
+            const particles = [];
+            const particleCount = 100;
+            
+            for (let i = 0; i < particleCount; i++) {
+                particles.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height,
+                    radius: Math.random() * 2 + 1,
+                    color: `rgba(99, 102, 241, ${Math.random() * 0.5 + 0.1})`,
+                    speedX: Math.random() * 0.5 - 0.25,
+                    speedY: Math.random() * 0.5 - 0.25
+                });
+            }
+            
+            function animate() {
+                requestAnimationFrame(animate);
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                
+                for (let i = 0; i < particleCount; i++) {
+                    const p = particles[i];
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+                    ctx.fillStyle = p.color;
+                    ctx.fill();
+                    
+                    // Move particles
+                    p.x += p.speedX;
+                    p.y += p.speedY;
+                    
+                    // Bounce off edges
+                    if (p.x < 0 || p.x > canvas.width) p.speedX *= -1;
+                    if (p.y < 0 || p.y > canvas.height) p.speedY *= -1;
+                    
+                    // Draw connections
+                    for (let j = i + 1; j < particleCount; j++) {
+                        const p2 = particles[j];
+                        const dx = p.x - p2.x;
+                        const dy = p.y - p2.y;
+                        const distance = Math.sqrt(dx * dx + dy * dy);
+                        
+                        if (distance < 100) {
+                            ctx.beginPath();
+                            ctx.strokeStyle = `rgba(99, 102, 241, ${0.1 * (1 - distance / 100)})`;
+                            ctx.lineWidth = 0.5;
+                            ctx.moveTo(p.x, p.y);
+                            ctx.lineTo(p2.x, p2.y);
+                            ctx.stroke();
+                        }
+                    }
+                }
+            }
+            
+            animate();
+        }
+        
+        // Initialize radar chart for skills
+        function initSkillsRadarChart() {
+            const container = document.getElementById('skills-radar-chart');
+            if (!container) return;
+            
+            const width = container.offsetWidth;
+            const height = container.offsetHeight;
+            const radius = Math.min(width, height) / 2 - 30;
+            const center = { x: width / 2, y: height / 2 };
+            
+            const svg = d3.select('#skills-radar-chart')
+                .append('svg')
+                .attr('width', width)
+                .attr('height', height);
+            
+            const skillData = [
+                { name: "Data Analysis", value: 0.9 },
+                { name: "Visualization", value: 0.85 },
+                { name: "Statistics", value: 0.8 },
+                { name: "System Monitoring", value: 0.95 },
+                { name: "Pattern Recognition", value: 0.88 },
+                { name: "Failure Analysis", value: 0.92 }
+            ];
+            
+            const angleSlice = Math.PI * 2 / skillData.length;
+            
+            // Draw axis lines
+            for (let i = 0; i < skillData.length; i++) {
+                const angle = angleSlice * i - Math.PI / 2;
+                const lineCoords = {
+                    x2: center.x + radius * Math.cos(angle),
+                    y2: center.y + radius * Math.sin(angle)
+                };
+                
+                svg.append('line')
+                    .attr('x1', center.x)
+                    .attr('y1', center.y)
+                    .attr('x2', lineCoords.x2)
+                    .attr('y2', lineCoords.y2)
+                    .style('stroke', '#4b5563')
+                    .style('stroke-width', '1px');
+                
+                // Add labels
+                svg.append('text')
+                    .attr('x', center.x + (radius + 10) * Math.cos(angle))
+                    .attr('y', center.y + (radius + 10) * Math.sin(angle))
+                    .attr('text-anchor', (angle >= 0 && angle < Math.PI) ? 'start' : 'end')
+                    .attr('dominant-baseline', 'middle')
+                    .style('font-size', '12px')
+                    .style('fill', '#cbd5e1')
+                    .text(skillData[i].name);
+            }
+            
+            // Draw concentric circles
+            const levels = 5;
+            for (let j = 0; j < levels; j++) {
+                const levelRadius = radius * ((j + 1) / levels);
+                
+                svg.append('circle')
+                    .attr('cx', center.x)
+                    .attr('cy', center.y)
+                    .attr('r', levelRadius)
+                    .style('fill', 'none')
+                    .style('stroke', '#4b5563')
+                    .style('stroke-width', '0.5px');
+            }
+            
+            // Create radar outline
+            const radarLine = d3.lineRadial()
+                .radius(d => d.value * radius)
+                .angle((d, i) => i * angleSlice - Math.PI / 2)
+                .curve(d3.curveLinearClosed);
+            
+            // Animate the radar chart
+            const pathData = skillData.map(d => ({ value: 0 }));
+            
+            const path = svg.append('path')
+                .datum(pathData)
+                .attr('d', radarLine)
+                .attr('transform', `translate(${center.x},${center.y})`)
+                .style('fill', 'rgba(99, 102, 241, 0.3)')
+                .style('stroke', '#6366f1')
+                .style('stroke-width', '2px');
+            
+            // Animation
+            d3.select(path.node())
+                .transition()
+                .duration(2000)
+                .attrTween('d', function() {
+                    const interpolateValues = skillData.map((d, i) => {
+                        return d3.interpolate(0, d.value);
+                    });
+                    
+                    return function(t) {
+                        const newData = skillData.map((d, i) => {
+                            return { value: interpolateValues[i](t) };
+                        });
+                        return radarLine(newData);
+                    };
+                });
+            
+            // Add data points
+            const pointsGroup = svg.append('g')
+                .attr('transform', `translate(${center.x},${center.y})`);
+            
+            setTimeout(() => {
+                skillData.forEach((d, i) => {
+                    const angle = angleSlice * i - Math.PI / 2;
+                    const x = d.value * radius * Math.cos(angle);
+                    const y = d.value * radius * Math.sin(angle);
+                    
+                    pointsGroup.append('circle')
+                        .attr('cx', x)
+                        .attr('cy', y)
+                        .attr('r', 5)
+                        .style('fill', '#6366f1')
+                        .style('stroke', '#fff')
+                        .style('stroke-width', '2px')
+                        .style('opacity', 0)
+                        .transition()
+                        .delay(2000 + i * 100)
+                        .duration(300)
+                        .style('opacity', 1);
+                });
+            }, 100);
+        }
+        
+        // Initialize everything after DOM is loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            createParticles();
+            initSkillsRadarChart();
+        });
+        
+        // Handle window resize for responsive charts
+        window.addEventListener('resize', function() {
+            // Delay to ensure proper DOM updates
+            setTimeout(() => {
+                document.getElementById('skills-radar-chart').innerHTML = '';
+                initSkillsRadarChart();
+                
+                const canvas = document.getElementById('hero-particles');
+                if (canvas) {
+                    canvas.width = canvas.offsetWidth;
+                    canvas.height = canvas.offsetHeight;
+                    createParticles();
+                }
+            }, 500);
+        });
+    </script>
+</body>
+</html>
